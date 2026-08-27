@@ -35,6 +35,11 @@
     .stage::before { content:""; position:absolute; inset:0; background:linear-gradient(115deg,#4d635b 0%,#314542 34%,#1c2929 70%,#0d1718 100%); }
     .stage::after { content:""; position:absolute; inset:0; opacity:.18; background-image:linear-gradient(#d6e1d7 1px,transparent 1px),linear-gradient(90deg,#d6e1d7 1px,transparent 1px); background-size:44px 44px; mix-blend-mode:soft-light; }
     .camera-note { position:absolute; z-index:2; top:18px; left:18px; padding:7px 10px; background:#101717b8; color:#d5ddda; font-size:12px; border-left:2px solid var(--teal); backdrop-filter:blur(4px); }
+    .mobile-topline { display:none; }
+    .capture-btn { display:none; }
+    .measure-toolbar { display:none; }
+    .reticle { display:none; }
+    .scan-instruction { display:none; }
     .object { position:absolute; z-index:1; filter:drop-shadow(0 13px 11px #07100e8c); }
     .object-phone { width:93px; height:177px; border:7px solid #151a1d; border-radius:15px; background:linear-gradient(135deg,#536f7d,#182832); left:19%; top:30%; transform:rotate(-10deg); }
     .object-phone::after { content:""; position:absolute; width:33px; height:33px; border:4px solid #788e93; border-radius:9px; left:9px; top:10px; }
@@ -73,7 +78,36 @@
     .tips { color:var(--muted); font-size:12px; line-height:1.7; margin:0; padding-left:17px; }.tips li + li { margin-top:5px; }
     .mini { display:grid; grid-template-columns:1fr 1fr; gap:9px; }.mini div { border:1px solid var(--line); padding:11px 12px; }.mini b { display:block; color:#e7e8dd; font-size:15px; margin-top:3px; }.mini small { color:var(--muted); font-size:11px; }
     @media (max-width:850px) { .app { padding:17px 16px 25px; }.layout { grid-template-columns:1fr; gap:18px; }.stage { min-height:310px; }.panel { padding:18px; }.panel-side { display:grid; grid-template-columns:1fr 1fr; gap:14px; }.panel-side .panel + .panel { margin-top:0; } }
-    @media (max-width:560px) { h1 { font-size:30px; }.status { display:none; }.stage { min-height:275px; }.object-phone { transform:scale(.78) rotate(-10deg); left:12%; }.object-cup { transform:scale(.78); right:9%; }.target-box { transform:scale(.78) rotate(-10deg); left:8%; }.target-box.right { transform:scale(.78); right:7%; }.handle { width:34px; height:34px; }.hint { max-width:calc(100% - 28px); overflow:hidden; font-size:10px; bottom:10px; }.toolbar { gap:10px; }.toolbar span { display:none; }.toolbar button { min-height:44px; flex:1; }.panel-side { display:block; } .panel-side .panel + .panel { margin-top:14px; } }
+    @media (max-width:560px) {
+      html, body { background:#080a0b; }
+      .app { min-height:100svh; padding:0; }
+      .topbar { position:fixed; z-index:20; top:0; left:0; right:0; padding:16px 18px; border:0; background:linear-gradient(#080a0bd9,transparent); }
+      .topbar .brand { display:none; }.brand-mark { width:30px; height:30px; font-size:17px; }.status { display:none; }.install-button { margin-left:auto; padding:7px 10px; }
+      .layout { display:block; padding:0; }.layout > div { width:100%; }
+      .eyebrow, h1, .intro { display:none; }
+      .stage-shell { padding:0; border:0; box-shadow:none; background:#080a0b; }
+      .stage { min-height:100svh; aspect-ratio:auto; }
+      .camera-note { top:78px; left:18px; font-size:10px; padding:6px 8px; }
+      .mobile-topline { position:absolute; z-index:7; top:76px; left:50%; display:flex; flex-direction:column; align-items:center; gap:2px; transform:translateX(-50%); color:#f4f2ea; font-size:15px; font-weight:700; }
+      .mobile-topline small { color:#b9c0bb; font-size:10px; font-weight:400; }
+      .measure-toolbar { position:absolute; z-index:8; top:16px; left:18px; right:18px; display:flex; align-items:center; justify-content:space-between; color:#fff; font-size:14px; font-weight:700; }
+      .measure-toolbar button { display:grid; place-items:center; width:36px; height:36px; padding:0; border:1px solid #d5ded8aa; border-radius:50%; background:#10171899; color:#fff; font-size:17px; }
+      .measure-toolbar button.active { background:var(--accent); color:#101414; border-color:var(--accent); }
+      .object-phone { transform:scale(.78) rotate(-10deg); left:12%; }.object-cup { transform:scale(.78); right:9%; }
+      .target-box { transform:scale(.78) rotate(-10deg); left:8%; }.target-box.right { transform:scale(.78); right:7%; }
+      .handle { width:34px; height:34px; }
+      .reticle { position:absolute; z-index:2; left:50%; top:42%; display:grid; place-items:center; width:48px; height:48px; transform:translate(-50%,-50%); border:1px solid #eef2eb9c; border-radius:50%; color:#fff; opacity:.7; }
+      .reticle span { font-size:25px; font-weight:300; line-height:1; }
+      .scan-instruction { position:absolute; z-index:8; top:calc(42% + 35px); left:50%; display:block; width:max-content; max-width:calc(100% - 36px); transform:translateX(-50%); padding:7px 11px; border-radius:5px; background:#101718aa; color:#edf2ec; font-size:11px; text-align:center; }
+      .hint { max-width:calc(100% - 28px); overflow:hidden; font-size:10px; bottom:154px; padding:7px 10px; }
+      .toolbar { position:absolute; z-index:12; bottom:122px; left:18px; right:18px; padding:0; justify-content:flex-start; }
+      .toolbar span { display:none; }.toolbar button { min-height:42px; padding:8px 13px; background:#101718bb; border-color:#87918c; }
+      .capture-btn { position:absolute; z-index:10; display:grid; place-items:center; right:19px; top:75px; width:38px; height:38px; border:1px solid #b9c5be; border-radius:50%; background:#10171899; color:#fff; font-size:22px; }
+      .panel-side { position:fixed; z-index:15; display:block; left:0; right:0; bottom:0; margin:0; }
+      .panel-side .panel { display:none; }.panel-side .panel:first-child { display:block; margin:0; padding:15px 20px 22px; border:0; border-radius:22px 22px 0 0; background:#111718ed; box-shadow:0 -12px 28px #0007; }
+      .panel-title { margin-bottom:12px; font-size:13px; }.reading { display:flex; align-items:baseline; flex-wrap:wrap; gap:0 4px; padding:11px 0 13px; margin-bottom:13px; }.reading-label { width:100%; margin-bottom:6px; }.value { font-size:45px; }.unit { font-size:15px; }
+      .confidence { width:100%; margin-top:9px; font-size:11px; }.bar { margin-top:6px; }.field-label { display:none; } select { display:none; }.primary { margin-top:13px; min-height:44px; }
+    }
   </style>
 </head>
 <body>
@@ -91,6 +125,8 @@
         <div class="stage-shell">
           <div class="stage" id="stage" aria-label="พื้นที่สแกนวัตถุ">
             <video class="camera-feed" id="cameraFeed" autoplay playsinline muted></video>
+            <div class="mobile-topline"><span>ระยะจริง</span><small>สแกนวัตถุ</small></div>
+            <div class="measure-toolbar"><button id="flashBtn" type="button" aria-label="ไฟฉาย">⚡</button><span>วัดระยะ</span><button id="helpBtn" type="button" aria-label="ช่วยเหลือ">?</button></div>
             <div class="camera-note">LIVE SCAN / 01</div>
             <div class="object object-phone"></div><div class="object object-cup"></div>
             <div class="target-box"><i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i></div>
@@ -98,7 +134,10 @@
             <div class="measure-line" id="measureLine"></div>
             <div class="handle" id="startHandle" role="slider" aria-label="จุดเริ่มต้น"></div><div class="handle end" id="endHandle" role="slider" aria-label="จุดปลายทาง"></div>
             <div class="handle-label" id="startLabel">A</div><div class="handle-label end" id="endLabel">B</div>
+            <div class="reticle" aria-hidden="true"><span>+</span></div>
+            <div class="scan-instruction" id="scanInstruction">เล็งกล้องไปที่วัตถุ แล้วลากจุด A และ B</div>
             <div class="hint">ลากจุด A หรือ B เพื่อวัดระยะ</div>
+            <button class="capture-btn" id="captureBtn" type="button" aria-label="รีเซ็ตการวัด">↺</button>
           </div>
           <div class="toolbar"><span>ความแม่นยำจะเปลี่ยนตามระยะกล้อง</span><button id="resetBtn" type="button">รีเซ็ตจุดวัด</button></div>
         </div>
@@ -147,8 +186,11 @@
     function move(event) { if (!active) return; const rect = stage.getBoundingClientRect(); points[active].x = Math.max(4, Math.min(96, (event.clientX - rect.left) / rect.width * 100)); points[active].y = Math.max(8, Math.min(92, (event.clientY - rect.top) / rect.height * 100)); updateMeasurement(); }
     [ [startHandle,'start'], [endHandle,'end'] ].forEach(([handle,name]) => { handle.addEventListener('pointerdown', event => { active = name; handle.setPointerCapture(event.pointerId); }); handle.addEventListener('pointermove', move); handle.addEventListener('pointerup', () => active = null); });
     document.querySelector('#resetBtn').addEventListener('click', () => { points.start = { ...initial.start }; points.end = { ...initial.end }; updateMeasurement(); });
+    document.querySelector('#captureBtn').addEventListener('click', () => { points.start = { ...initial.start }; points.end = { ...initial.end }; updateMeasurement(); });
     unitSelect.addEventListener('change', updateMeasurement);
     document.querySelector('#cameraBtn').addEventListener('click', async () => { const status = document.querySelector('#cameraStatus'); const button = document.querySelector('#cameraBtn'); try { const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }); document.querySelector('#cameraFeed').srcObject = stream; stage.classList.add('camera-live'); status.textContent = 'กล้องพร้อมใช้งาน · สแกนแบบเรียลไทม์'; button.textContent = 'กล้องกำลังทำงาน'; } catch { status.textContent = 'ใช้โหมดสาธิต · พร้อมวัดระยะ'; button.textContent = 'โหมดสาธิตกำลังทำงาน'; } });
+    document.querySelector('#flashBtn').addEventListener('click', event => { event.currentTarget.classList.toggle('active'); document.querySelector('#scanInstruction').textContent = event.currentTarget.classList.contains('active') ? 'เปิดโหมดสว่าง · จัดวัตถุให้อยู่ในกรอบ' : 'เล็งกล้องไปที่วัตถุ แล้วลากจุด A และ B'; });
+    document.querySelector('#helpBtn').addEventListener('click', () => { document.querySelector('#scanInstruction').textContent = 'ลากจุดสีเหลืองและสีเขียวไปยังปลายระยะที่ต้องการ'; });
     let installPrompt;
     window.addEventListener('beforeinstallprompt', event => { event.preventDefault(); installPrompt = event; document.querySelector('#installBtn').classList.add('ready'); });
     document.querySelector('#installBtn').addEventListener('click', async () => { if (!installPrompt) return; installPrompt.prompt(); await installPrompt.userChoice; installPrompt = null; document.querySelector('#installBtn').classList.remove('ready'); });
