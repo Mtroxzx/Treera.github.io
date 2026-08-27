@@ -2,200 +2,45 @@
 <html lang="th">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0b0d0e">
-  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#08090a">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="manifest" href="manifest.webmanifest">
-  <title>ระยะจริง | Realtime Measure</title>
+  <title>วัดระยะ | Measure</title>
   <style>
-    :root { --ink:#f4f2ea; --muted:#a4aaa8; --panel:#15191b; --line:#344043; --accent:#f4c84c; --teal:#55c6b1; --danger:#ff856c; }
-    * { box-sizing:border-box; }
-    html, body { margin:0; min-height:100%; overflow-x:hidden; background:#0b0d0e; color:var(--ink); font-family:"Noto Sans Thai","Leelawadee UI",Tahoma,sans-serif; }
-    body { background-image:radial-gradient(circle at 80% 5%, #25302e 0, #0b0d0e 38%); }
-    button { font:inherit; color:inherit; cursor:pointer; }
-    .app { min-height:100vh; max-width:1440px; margin:auto; padding:24px 34px 34px; }
-    .topbar { display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid #293133; padding-bottom:19px; }
-    .brand { display:flex; align-items:center; gap:13px; font-size:17px; font-weight:700; letter-spacing:.2px; }
-    .brand-mark { width:36px; height:36px; border:2px solid var(--accent); display:grid; place-items:center; color:var(--accent); font-size:20px; }
-    .status { color:var(--muted); font-size:13px; display:flex; align-items:center; gap:8px; }
-    .pulse { width:8px; height:8px; border-radius:50%; background:var(--teal); box-shadow:0 0 0 4px #55c6b11c; animation:pulse 1.8s ease-in-out infinite; }
-    @keyframes pulse { 50% { box-shadow:0 0 0 7px #55c6b100; } }
-    .layout { display:grid; grid-template-columns:minmax(0,1fr) 350px; gap:26px; padding-top:26px; }
-    .eyebrow { color:var(--accent); font-size:12px; letter-spacing:1.8px; text-transform:uppercase; font-weight:700; margin:0 0 8px; }
-    h1 { font-size:clamp(28px,3vw,44px); line-height:1.15; margin:0 0 9px; letter-spacing:0; }
-    .intro { color:var(--muted); max-width:570px; margin:0 0 24px; font-size:14px; }
-    .stage-shell { background:#101415; border:1px solid var(--line); padding:11px; box-shadow:0 22px 55px #00000035; }
-    .stage { position:relative; aspect-ratio:16/10; min-height:420px; overflow:hidden; background:#283434; touch-action:none; user-select:none; }
-    .camera-feed { position:absolute; z-index:0; inset:0; width:100%; height:100%; object-fit:cover; display:none; transform:scaleX(-1); }
-    .stage.camera-live .camera-feed { display:block; }
-    .stage.camera-live::before, .stage.camera-live::after { display:none; }
-    .stage.camera-live .object { display:none; }
-    .stage::before { content:""; position:absolute; inset:0; background:linear-gradient(115deg,#4d635b 0%,#314542 34%,#1c2929 70%,#0d1718 100%); }
-    .stage::after { content:""; position:absolute; inset:0; opacity:.18; background-image:linear-gradient(#d6e1d7 1px,transparent 1px),linear-gradient(90deg,#d6e1d7 1px,transparent 1px); background-size:44px 44px; mix-blend-mode:soft-light; }
-    .camera-note { position:absolute; z-index:2; top:18px; left:18px; padding:7px 10px; background:#101717b8; color:#d5ddda; font-size:12px; border-left:2px solid var(--teal); backdrop-filter:blur(4px); }
-    .mobile-topline { display:none; }
-    .capture-btn { display:none; }
-    .measure-toolbar { display:none; }
-    .reticle { display:none; }
-    .scan-instruction { display:none; }
-    .object { position:absolute; z-index:1; filter:drop-shadow(0 13px 11px #07100e8c); }
-    .object-phone { width:93px; height:177px; border:7px solid #151a1d; border-radius:15px; background:linear-gradient(135deg,#536f7d,#182832); left:19%; top:30%; transform:rotate(-10deg); }
-    .object-phone::after { content:""; position:absolute; width:33px; height:33px; border:4px solid #788e93; border-radius:9px; left:9px; top:10px; }
-    .object-cup { width:110px; height:123px; right:17%; top:35%; border-radius:8px 8px 24px 24px; background:linear-gradient(90deg,#bc6f43,#edb46c 52%,#90482f); }
-    .object-cup::after { content:""; position:absolute; width:30px; height:52px; border:8px solid #c5814d; border-left:0; border-radius:0 25px 25px 0; right:-28px; top:26px; }
-    .target-box { position:absolute; z-index:3; width:158px; height:158px; border:1px solid #f4c84cb8; left:16%; top:32%; transform:rotate(-10deg); pointer-events:none; }
-    .target-box.right { left:auto; right:15%; top:37%; transform:rotate(0deg); border-color:#55c6b1b8; }
-    .corner { position:absolute; width:17px; height:17px; border-color:var(--accent); border-style:solid; }
-    .target-box.right .corner { border-color:var(--teal); }
-    .tl { top:-2px; left:-2px; border-width:3px 0 0 3px; }.tr { top:-2px; right:-2px; border-width:3px 3px 0 0; }.bl { bottom:-2px; left:-2px; border-width:0 0 3px 3px; }.br { bottom:-2px; right:-2px; border-width:0 3px 3px 0; }
-    .measure-line { position:absolute; z-index:4; height:2px; background:var(--accent); transform-origin:0 50%; pointer-events:none; box-shadow:0 0 8px #f4c84caa; }
-    .measure-line::after { content:""; position:absolute; right:0; top:-5px; height:12px; border-right:2px solid var(--accent); }
-    .handle { position:absolute; z-index:5; width:25px; height:25px; border:3px solid #101414; background:var(--accent); border-radius:50%; transform:translate(-50%,-50%); box-shadow:0 0 0 2px #f4c84c,0 3px 12px #0008; touch-action:none; }
-    .handle.end { background:var(--teal); box-shadow:0 0 0 2px var(--teal),0 3px 12px #0008; }
-    .handle-label { position:absolute; z-index:6; transform:translate(-50%, 22px); font-size:11px; color:#0b0d0e; font-weight:800; background:var(--accent); padding:2px 6px; pointer-events:none; }
-    .handle-label.end { background:var(--teal); }
-    .hint { position:absolute; z-index:4; bottom:16px; left:50%; transform:translateX(-50%); color:#dbe4df; font-size:12px; background:#101717b8; padding:8px 13px; white-space:nowrap; backdrop-filter:blur(4px); }
-    .toolbar { display:flex; align-items:center; justify-content:space-between; padding-top:12px; color:var(--muted); font-size:12px; }
-    .toolbar button { border:1px solid var(--line); background:transparent; padding:8px 12px; font-size:12px; }
-    .toolbar button:hover { border-color:var(--accent); color:var(--accent); }
-    .install-button { display:none; border:1px solid var(--accent); background:transparent; color:var(--accent); padding:8px 12px; font-size:12px; }
-    .install-button.ready { display:block; }
-    .panel { background:var(--panel); border:1px solid var(--line); padding:23px; align-self:start; }
-    .panel + .panel { margin-top:14px; }
-    .panel-title { display:flex; justify-content:space-between; align-items:center; margin-bottom:23px; font-size:14px; font-weight:700; }
-    .panel-title span { color:var(--muted); font-size:11px; font-weight:400; }
-    .reading { border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:18px 0 19px; margin-bottom:21px; }
-    .reading-label { color:var(--muted); font-size:12px; margin-bottom:4px; }
-    .value { font-family:Georgia,serif; font-size:56px; line-height:1; letter-spacing:0; color:var(--accent); }
-    .unit { font-size:17px; color:#e8e4d4; margin-left:6px; }
-    .confidence { display:flex; justify-content:space-between; font-size:12px; margin-top:12px; color:var(--muted); }.confidence strong { color:var(--teal); }
-    .bar { height:4px; background:#2c3636; margin-top:8px; }.bar i { display:block; width:92%; height:100%; background:var(--teal); }
-    .field-label { color:var(--muted); font-size:12px; display:block; margin-bottom:8px; }
-    select { width:100%; min-height:44px; padding:11px; border:1px solid var(--line); background:#0e1213; color:var(--ink); outline:none; }
-    .primary { width:100%; min-height:46px; padding:13px; margin-top:18px; border:0; background:var(--accent); color:#111513; font-weight:800; }.primary:hover { background:#ffe074; }
-    .tips { color:var(--muted); font-size:12px; line-height:1.7; margin:0; padding-left:17px; }.tips li + li { margin-top:5px; }
-    .mini { display:grid; grid-template-columns:1fr 1fr; gap:9px; }.mini div { border:1px solid var(--line); padding:11px 12px; }.mini b { display:block; color:#e7e8dd; font-size:15px; margin-top:3px; }.mini small { color:var(--muted); font-size:11px; }
-    @media (max-width:850px) { .app { padding:17px 16px 25px; }.layout { grid-template-columns:1fr; gap:18px; }.stage { min-height:310px; }.panel { padding:18px; }.panel-side { display:grid; grid-template-columns:1fr 1fr; gap:14px; }.panel-side .panel + .panel { margin-top:0; } }
-    @media (max-width:560px) {
-      html, body { background:#080a0b; }
-      .app { min-height:100svh; padding:0; }
-      .topbar { position:fixed; z-index:20; top:0; left:0; right:0; padding:16px 18px; border:0; background:linear-gradient(#080a0bd9,transparent); }
-      .topbar .brand { display:none; }.brand-mark { width:30px; height:30px; font-size:17px; }.status { display:none; }.install-button { margin-left:auto; padding:7px 10px; }
-      .layout { display:block; padding:0; }.layout > div { width:100%; }
-      .eyebrow, h1, .intro { display:none; }
-      .stage-shell { padding:0; border:0; box-shadow:none; background:#080a0b; }
-      .stage { min-height:100svh; aspect-ratio:auto; }
-      .camera-note { top:78px; left:18px; font-size:10px; padding:6px 8px; }
-      .mobile-topline { position:absolute; z-index:7; top:76px; left:50%; display:flex; flex-direction:column; align-items:center; gap:2px; transform:translateX(-50%); color:#f4f2ea; font-size:15px; font-weight:700; }
-      .mobile-topline small { color:#b9c0bb; font-size:10px; font-weight:400; }
-      .measure-toolbar { position:absolute; z-index:8; top:16px; left:18px; right:18px; display:flex; align-items:center; justify-content:space-between; color:#fff; font-size:14px; font-weight:700; }
-      .measure-toolbar button { display:grid; place-items:center; width:36px; height:36px; padding:0; border:1px solid #d5ded8aa; border-radius:50%; background:#10171899; color:#fff; font-size:17px; }
-      .measure-toolbar button.active { background:var(--accent); color:#101414; border-color:var(--accent); }
-      .object-phone { transform:scale(.78) rotate(-10deg); left:12%; }.object-cup { transform:scale(.78); right:9%; }
-      .target-box { transform:scale(.78) rotate(-10deg); left:8%; }.target-box.right { transform:scale(.78); right:7%; }
-      .handle { width:34px; height:34px; }
-      .reticle { position:absolute; z-index:2; left:50%; top:42%; display:grid; place-items:center; width:48px; height:48px; transform:translate(-50%,-50%); border:1px solid #eef2eb9c; border-radius:50%; color:#fff; opacity:.7; }
-      .reticle span { font-size:25px; font-weight:300; line-height:1; }
-      .scan-instruction { position:absolute; z-index:8; top:calc(42% + 35px); left:50%; display:block; width:max-content; max-width:calc(100% - 36px); transform:translateX(-50%); padding:7px 11px; border-radius:5px; background:#101718aa; color:#edf2ec; font-size:11px; text-align:center; }
-      .hint { max-width:calc(100% - 28px); overflow:hidden; font-size:10px; bottom:154px; padding:7px 10px; }
-      .toolbar { position:absolute; z-index:12; bottom:122px; left:18px; right:18px; padding:0; justify-content:flex-start; }
-      .toolbar span { display:none; }.toolbar button { min-height:42px; padding:8px 13px; background:#101718bb; border-color:#87918c; }
-      .capture-btn { position:absolute; z-index:10; display:grid; place-items:center; right:19px; top:75px; width:38px; height:38px; border:1px solid #b9c5be; border-radius:50%; background:#10171899; color:#fff; font-size:22px; }
-      .panel-side { position:fixed; z-index:15; display:block; left:0; right:0; bottom:0; margin:0; }
-      .panel-side .panel { display:none; }.panel-side .panel:first-child { display:block; margin:0; padding:15px 20px 22px; border:0; border-radius:22px 22px 0 0; background:#111718ed; box-shadow:0 -12px 28px #0007; }
-      .panel-title { margin-bottom:12px; font-size:13px; }.reading { display:flex; align-items:baseline; flex-wrap:wrap; gap:0 4px; padding:11px 0 13px; margin-bottom:13px; }.reading-label { width:100%; margin-bottom:6px; }.value { font-size:45px; }.unit { font-size:15px; }
-      .confidence { width:100%; margin-top:9px; font-size:11px; }.bar { margin-top:6px; }.field-label { display:none; } select { display:none; }.primary { margin-top:13px; min-height:44px; }
-    }
+    :root{--bg:#08090a;--panel:#17191b;--text:#f5f4ed;--muted:#a4aaa8;--yellow:#f4c84c;--green:#65d5bb;--line:#3b4141}
+    *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:"Noto Sans Thai","Leelawadee UI",Tahoma,sans-serif}button,select{font:inherit;color:inherit}button{cursor:pointer}
+    .app{min-height:100svh;max-width:1200px;margin:auto;padding:24px}.desktop-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}.logo{display:flex;align-items:center;gap:10px;font-weight:700}.logo-mark{display:grid;place-items:center;width:34px;height:34px;border:2px solid var(--yellow);color:var(--yellow);font-size:19px}.connection{font-size:12px;color:var(--muted)}.connection i{display:inline-block;width:7px;height:7px;margin-right:7px;border-radius:50%;background:var(--green)}
+    .workspace{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:18px}.stage-wrap{position:relative;background:#101213;border:1px solid var(--line);padding:9px}.stage{position:relative;min-height:620px;overflow:hidden;background:#2d3936;touch-action:none;user-select:none}.stage:before{content:"";position:absolute;inset:0;background:linear-gradient(125deg,#53645d,#344844 35%,#172323 78%,#0b1213)}.stage:after{content:"";position:absolute;inset:0;opacity:.14;background-image:linear-gradient(#d8e4dd 1px,transparent 1px),linear-gradient(90deg,#d8e4dd 1px,transparent 1px);background-size:48px 48px}.stage.live:before,.stage.live:after{display:none}.camera{position:absolute;inset:0;width:100%;height:100%;display:none;object-fit:cover;transform:scaleX(-1)}.stage.live .camera{display:block}.camera-toolbar{position:absolute;z-index:8;top:17px;left:18px;right:18px;display:flex;align-items:center;justify-content:space-between}.camera-toolbar strong{font-size:15px}.tool{display:grid;place-items:center;width:38px;height:38px;border:1px solid #cad4ceaa;border-radius:50%;background:#10151699;color:#fff}.tool.active{background:var(--yellow);border-color:var(--yellow);color:#101313}.badge{position:absolute;z-index:5;top:74px;left:18px;padding:6px 9px;border-left:2px solid var(--green);background:#101516b8;color:#dbe2dc;font-size:10px;letter-spacing:.4px}.reticle{position:absolute;z-index:2;top:43%;left:50%;display:grid;place-items:center;width:52px;height:52px;border:1px solid #f3f6efaa;border-radius:50%;transform:translate(-50%,-50%);color:#fff;opacity:.8}.reticle b{font-size:26px;font-weight:400}.instruction{position:absolute;z-index:7;top:calc(43% + 40px);left:50%;width:max-content;max-width:calc(100% - 36px);padding:7px 11px;transform:translateX(-50%);border-radius:5px;background:#101516aa;color:#f1f3ec;font-size:11px;text-align:center}.object{position:absolute;z-index:1;filter:drop-shadow(0 12px 9px #0008)}.book{left:20%;top:31%;width:148px;height:190px;transform:rotate(-9deg);border:8px solid #263136;background:#7a9a9d}.book:after{content:"";position:absolute;inset:18px 14px;border:1px solid #b7ceca}.bottle{right:20%;top:35%;width:88px;height:180px;border-radius:30px 30px 18px 18px;background:linear-gradient(90deg,#b66b41,#ebb174 54%,#87432e)}.bottle:before{content:"";position:absolute;top:-23px;left:25px;width:38px;height:28px;border-radius:7px 7px 0 0;background:#79452f}.target{position:absolute;z-index:3;width:145px;height:145px;border:1px solid #f4c84cbb;pointer-events:none}.target.a{left:17%;top:34%;transform:rotate(-9deg)}.target.b{right:16%;top:39%;border-color:#65d5bbcc}.corner{position:absolute;width:17px;height:17px;border:3px solid var(--yellow)}.target.b .corner{border-color:var(--green)}.tl{top:-2px;left:-2px;border-right:0;border-bottom:0}.tr{top:-2px;right:-2px;border-left:0;border-bottom:0}.bl{bottom:-2px;left:-2px;border-right:0;border-top:0}.br{right:-2px;bottom:-2px;border-left:0;border-top:0}.line{position:absolute;z-index:4;height:3px;background:var(--yellow);transform-origin:0 50%;box-shadow:0 0 9px #f4c84ccc;pointer-events:none}.line:after{content:"";position:absolute;right:0;top:-5px;height:13px;border-right:2px solid var(--yellow)}.point{position:absolute;z-index:9;width:30px;height:30px;border:3px solid #111717;border-radius:50%;background:var(--yellow);transform:translate(-50%,-50%);box-shadow:0 0 0 2px var(--yellow),0 4px 12px #0009;touch-action:none}.point.end{background:var(--green);box-shadow:0 0 0 2px var(--green),0 4px 12px #0009}.point-label{position:absolute;z-index:10;padding:2px 6px;transform:translate(-50%,22px);background:var(--yellow);color:#111;font-size:11px;font-weight:800;pointer-events:none}.point-label.end{background:var(--green)}.underbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 2px 0;color:var(--muted);font-size:11px}.underbar button{padding:8px 12px;border:1px solid var(--line);background:transparent}.underbar button:hover{border-color:var(--yellow);color:var(--yellow)}
+    .panel{padding:20px;background:var(--panel);border:1px solid var(--line)}.panel+.panel{margin-top:12px}.panel h2{display:flex;justify-content:space-between;margin:0 0 18px;font-size:14px}.panel h2 span{color:var(--muted);font-size:11px;font-weight:400}.reading{padding:16px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}.reading small{display:block;color:var(--muted);font-size:11px}.number{margin-top:6px;color:var(--yellow);font-family:Georgia,serif;font-size:54px;line-height:1}.number em{font-family:Tahoma,sans-serif;color:#eee;font-size:15px;font-style:normal}.confidence{display:flex;justify-content:space-between;margin-top:15px;color:var(--muted);font-size:11px}.confidence b{color:var(--green)}.meter{height:4px;margin-top:7px;background:#303838}.meter i{display:block;width:92%;height:100%;background:var(--green)}.field{display:block;margin-top:17px;color:var(--muted);font-size:11px}.field select{width:100%;margin-top:7px;padding:10px;border:1px solid var(--line);background:#0c1011;outline:0}.primary{width:100%;min-height:45px;margin-top:16px;border:0;background:var(--yellow);color:#111513;font-weight:800}.primary:hover{background:#ffe17a}.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}.stats div{padding:10px;border:1px solid var(--line)}.stats small{display:block;color:var(--muted);font-size:10px}.stats b{display:block;margin-top:4px}.tips{margin:0;padding-left:17px;color:var(--muted);font-size:11px;line-height:1.8}
+    @media(max-width:760px){.app{padding:0}.desktop-head{position:fixed;z-index:20;top:0;left:0;right:0;margin:0;padding:15px 18px;background:linear-gradient(#08090ae8,transparent)}.desktop-head .logo,.connection{display:none}.workspace{display:block}.stage-wrap{padding:0;border:0}.stage{min-height:100svh}.underbar{position:absolute;z-index:30;left:18px;right:18px;bottom:190px;padding:0}.underbar span{display:none}.underbar button{min-height:42px;background:#101516bb}.panel-side{position:fixed;z-index:15;left:0;right:0;bottom:0}.panel-side .panel{display:none}.panel-side .panel:first-child{display:block;margin:0;padding:15px 20px 22px;border:0;border-radius:22px 22px 0 0;background:#111718ed;box-shadow:0 -12px 28px #0008}.panel h2{margin-bottom:10px}.reading{padding:11px 0 12px}.number{font-size:44px}.field{display:none}.panel .primary{margin-top:12px}.badge{top:72px}.point{width:36px;height:36px}.reticle{top:42%}.instruction{top:calc(42% + 40px)}}
   </style>
 </head>
 <body>
   <main class="app">
-    <header class="topbar">
-      <div class="brand"><div class="brand-mark">↔</div><span>ระยะจริง</span></div>
-      <button class="install-button" id="installBtn" type="button">ติดตั้งแอป</button>
-      <div class="status"><i class="pulse"></i><span id="cameraStatus">กล้องพร้อมใช้งาน · โหมดสาธิต</span></div>
-    </header>
-    <section class="layout">
-      <div>
-        <p class="eyebrow">Realtime object measure</p>
-        <h1>วัดระยะจากภาพ<br>ได้ในจังหวะเดียว</h1>
-        <p class="intro">ลากจุดสีเหลืองจากวัตถุเริ่มต้น ไปยังวัตถุปลายทาง เพื่ออ่านค่าความยาวแบบเรียลไทม์</p>
-        <div class="stage-shell">
-          <div class="stage" id="stage" aria-label="พื้นที่สแกนวัตถุ">
-            <video class="camera-feed" id="cameraFeed" autoplay playsinline muted></video>
-            <div class="mobile-topline"><span>ระยะจริง</span><small>สแกนวัตถุ</small></div>
-            <div class="measure-toolbar"><button id="flashBtn" type="button" aria-label="ไฟฉาย">⚡</button><span>วัดระยะ</span><button id="helpBtn" type="button" aria-label="ช่วยเหลือ">?</button></div>
-            <div class="camera-note">LIVE SCAN / 01</div>
-            <div class="object object-phone"></div><div class="object object-cup"></div>
-            <div class="target-box"><i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i></div>
-            <div class="target-box right"><i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i></div>
-            <div class="measure-line" id="measureLine"></div>
-            <div class="handle" id="startHandle" role="slider" aria-label="จุดเริ่มต้น"></div><div class="handle end" id="endHandle" role="slider" aria-label="จุดปลายทาง"></div>
-            <div class="handle-label" id="startLabel">A</div><div class="handle-label end" id="endLabel">B</div>
-            <div class="reticle" aria-hidden="true"><span>+</span></div>
-            <div class="scan-instruction" id="scanInstruction">เล็งกล้องไปที่วัตถุ แล้วลากจุด A และ B</div>
-            <div class="hint">ลากจุด A หรือ B เพื่อวัดระยะ</div>
-            <button class="capture-btn" id="captureBtn" type="button" aria-label="รีเซ็ตการวัด">↺</button>
-          </div>
-          <div class="toolbar"><span>ความแม่นยำจะเปลี่ยนตามระยะกล้อง</span><button id="resetBtn" type="button">รีเซ็ตจุดวัด</button></div>
-        </div>
-      </div>
-      <aside class="panel-side">
-        <section class="panel">
-          <div class="panel-title">ผลการวัด <span>อัปเดตสด</span></div>
-          <div class="reading"><div class="reading-label">ระยะห่างระหว่างวัตถุ</div><span class="value" id="distance">24.6</span><span class="unit" id="unit">ซม.</span><div class="confidence"><span>ความมั่นใจของการสแกน</span><strong>92%</strong></div><div class="bar"><i></i></div></div>
-          <label class="field-label" for="unitSelect">หน่วยวัด</label>
-          <select id="unitSelect"><option value="cm">เซนติเมตร (cm)</option><option value="m">เมตร (m)</option><option value="in">นิ้ว (in)</option></select>
-          <button class="primary" id="cameraBtn" type="button">เปิดกล้องจริง</button>
-        </section>
-        <section class="panel"><div class="panel-title">ข้อมูลเซสชัน <span>วันนี้</span></div><div class="mini"><div><small>จุดวัด</small><b id="points">02</b></div><div><small>สถานะ</small><b style="color:var(--teal)">LIVE</b></div></div></section>
-        <section class="panel"><div class="panel-title">วิธีใช้งาน</div><ol class="tips"><li>จัดวัตถุให้อยู่ในกรอบสแกน</li><li>ลากจุด A และ B ไปยังตำแหน่งที่ต้องการ</li><li>อ่านค่าที่แผงผลการวัดด้านบน</li></ol></section>
-      </aside>
+    <header class="desktop-head"><div class="logo"><span class="logo-mark">↔</span>วัดระยะ</div><div class="connection"><i></i><span id="status">โหมดสาธิต</span></div></header>
+    <section class="workspace">
+      <div class="stage-wrap"><div class="stage" id="stage">
+        <video class="camera" id="camera" autoplay playsinline muted></video>
+        <div class="camera-toolbar"><button class="tool" id="flash" type="button" aria-label="ไฟฉาย">⚡</button><strong>Measure</strong><button class="tool" id="help" type="button" aria-label="ช่วยเหลือ">?</button></div>
+        <div class="badge">LIVE SCAN · จุด A/B</div><div class="reticle"><b>+</b></div><div class="instruction" id="instruction">เล็งกล้องไปที่วัตถุ แล้วลากจุด A และ B</div>
+        <div class="object book"></div><div class="object bottle"></div>
+        <div class="target a"><i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i></div><div class="target b"><i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i></div>
+        <div class="line" id="line"></div><div class="point" id="start" aria-label="จุดเริ่มต้น"></div><div class="point end" id="end" aria-label="จุดปลายทาง"></div><div class="point-label" id="startLabel">A</div><div class="point-label end" id="endLabel">B</div>
+        <div class="underbar"><span>แตะจุดแล้วลากเพื่อกำหนดปลายระยะ</span><button id="reset" type="button">รีเซ็ต</button></div>
+      </div></div>
+      <aside class="panel-side"><section class="panel"><h2>ผลการวัด <span>อัปเดตสด</span></h2><div class="reading"><small>ระยะห่างระหว่างจุด</small><div class="number"><span id="distance">24.6</span> <em id="unit">ซม.</em></div><div class="confidence"><span>ความมั่นใจโดยประมาณ</span><b>92%</b></div><div class="meter"><i></i></div></div><label class="field">หน่วยวัด<select id="units"><option value="cm">เซนติเมตร (cm)</option><option value="m">เมตร (m)</option><option value="in">นิ้ว (in)</option></select></label><button class="primary" id="cameraButton" type="button">เปิดกล้อง</button></section><section class="panel"><h2>เซสชัน <span>ตอนนี้</span></h2><div class="stats"><div><small>จุดวัด</small><b>02</b></div><div><small>สถานะ</small><b style="color:var(--green)">LIVE</b></div></div></section><section class="panel"><h2>วิธีใช้งาน</h2><ol class="tips"><li>จัดวัตถุให้อยู่ในกรอบ</li><li>ลาก A และ B ไปยังปลายระยะ</li><li>อ่านค่าที่แผงด้านล่าง</li></ol></section></aside>
     </section>
   </main>
   <script>
-    const stage = document.querySelector('#stage');
-    const startHandle = document.querySelector('#startHandle');
-    const endHandle = document.querySelector('#endHandle');
-    const startLabel = document.querySelector('#startLabel');
-    const endLabel = document.querySelector('#endLabel');
-    const line = document.querySelector('#measureLine');
-    const distance = document.querySelector('#distance');
-    const unit = document.querySelector('#unit');
-    const unitSelect = document.querySelector('#unitSelect');
-    const initial = { start: { x: 24, y: 48 }, end: { x: 75, y: 54 } };
-    const points = { start: { ...initial.start }, end: { ...initial.end } };
-    let active = null;
-
-    function updateMeasurement() {
-      const rect = stage.getBoundingClientRect();
-      const startX = points.start.x * rect.width / 100, startY = points.start.y * rect.height / 100;
-      const endX = points.end.x * rect.width / 100, endY = points.end.y * rect.height / 100;
-      const pxDistance = Math.hypot(endX - startX, endY - startY);
-      const cm = pxDistance * 0.47;
-      const selected = unitSelect.value;
-      const converted = selected === 'm' ? cm / 100 : selected === 'in' ? cm / 2.54 : cm;
-      distance.textContent = converted.toFixed(1);
-      unit.textContent = selected === 'm' ? 'ม.' : selected === 'in' ? 'นิ้ว' : 'ซม.';
-      [ [startHandle,startLabel,points.start], [endHandle,endLabel,points.end] ].forEach(([handle,label,point]) => { handle.style.left = point.x + '%'; handle.style.top = point.y + '%'; label.style.left = point.x + '%'; label.style.top = point.y + '%'; });
-      const angle = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
-      line.style.left = startX + 'px'; line.style.top = startY + 'px'; line.style.width = pxDistance + 'px'; line.style.transform = 'rotate(' + angle + 'deg)';
-    }
-    function move(event) { if (!active) return; const rect = stage.getBoundingClientRect(); points[active].x = Math.max(4, Math.min(96, (event.clientX - rect.left) / rect.width * 100)); points[active].y = Math.max(8, Math.min(92, (event.clientY - rect.top) / rect.height * 100)); updateMeasurement(); }
-    [ [startHandle,'start'], [endHandle,'end'] ].forEach(([handle,name]) => { handle.addEventListener('pointerdown', event => { active = name; handle.setPointerCapture(event.pointerId); }); handle.addEventListener('pointermove', move); handle.addEventListener('pointerup', () => active = null); });
-    document.querySelector('#resetBtn').addEventListener('click', () => { points.start = { ...initial.start }; points.end = { ...initial.end }; updateMeasurement(); });
-    document.querySelector('#captureBtn').addEventListener('click', () => { points.start = { ...initial.start }; points.end = { ...initial.end }; updateMeasurement(); });
-    unitSelect.addEventListener('change', updateMeasurement);
-    document.querySelector('#cameraBtn').addEventListener('click', async () => { const status = document.querySelector('#cameraStatus'); const button = document.querySelector('#cameraBtn'); try { const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }); document.querySelector('#cameraFeed').srcObject = stream; stage.classList.add('camera-live'); status.textContent = 'กล้องพร้อมใช้งาน · สแกนแบบเรียลไทม์'; button.textContent = 'กล้องกำลังทำงาน'; } catch { status.textContent = 'ใช้โหมดสาธิต · พร้อมวัดระยะ'; button.textContent = 'โหมดสาธิตกำลังทำงาน'; } });
-    document.querySelector('#flashBtn').addEventListener('click', event => { event.currentTarget.classList.toggle('active'); document.querySelector('#scanInstruction').textContent = event.currentTarget.classList.contains('active') ? 'เปิดโหมดสว่าง · จัดวัตถุให้อยู่ในกรอบ' : 'เล็งกล้องไปที่วัตถุ แล้วลากจุด A และ B'; });
-    document.querySelector('#helpBtn').addEventListener('click', () => { document.querySelector('#scanInstruction').textContent = 'ลากจุดสีเหลืองและสีเขียวไปยังปลายระยะที่ต้องการ'; });
-    let installPrompt;
-    window.addEventListener('beforeinstallprompt', event => { event.preventDefault(); installPrompt = event; document.querySelector('#installBtn').classList.add('ready'); });
-    document.querySelector('#installBtn').addEventListener('click', async () => { if (!installPrompt) return; installPrompt.prompt(); await installPrompt.userChoice; installPrompt = null; document.querySelector('#installBtn').classList.remove('ready'); });
-    if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
-    window.addEventListener('resize', updateMeasurement); updateMeasurement();
+    const stage=document.querySelector('#stage'), line=document.querySelector('#line'), distance=document.querySelector('#distance'), unit=document.querySelector('#unit'), units=document.querySelector('#units');
+    const points={start:{x:25,y:49},end:{x:74,y:55}}, initial=JSON.parse(JSON.stringify(points)); let active=null;
+    function render(){const r=stage.getBoundingClientRect(),a=points.start,b=points.end,ax=a.x*r.width/100,ay=a.y*r.height/100,bx=b.x*r.width/100,by=b.y*r.height/100,px=Math.hypot(bx-ax,by-ay),cm=px*.47,v=units.value==='m'?cm/100:units.value==='in'?cm/2.54:cm;distance.textContent=v.toFixed(1);unit.textContent=units.value==='m'?'ม.':units.value==='in'?'นิ้ว':'ซม.';[[start,startLabel,a],[end,endLabel,b]].forEach(([el,label,p])=>{el.style.left=p.x+'%';el.style.top=p.y+'%';label.style.left=p.x+'%';label.style.top=p.y+'%'});line.style.left=ax+'px';line.style.top=ay+'px';line.style.width=px+'px';line.style.transform='rotate('+Math.atan2(by-ay,bx-ax)*180/Math.PI+'deg)'}
+    function move(e){if(!active)return;const r=stage.getBoundingClientRect();points[active].x=Math.max(4,Math.min(96,(e.clientX-r.left)/r.width*100));points[active].y=Math.max(8,Math.min(88,(e.clientY-r.top)/r.height*100));render()}
+    [[start,'start'],[end,'end']].forEach(([el,name])=>{el.addEventListener('pointerdown',e=>{active=name;el.setPointerCapture(e.pointerId)});el.addEventListener('pointermove',move);el.addEventListener('pointerup',()=>active=null)}); document.querySelector('#reset').onclick=()=>{points.start={...initial.start};points.end={...initial.end};render()}; units.onchange=render;
+    document.querySelector('#flash').onclick=e=>{e.currentTarget.classList.toggle('active');document.querySelector('#instruction').textContent=e.currentTarget.classList.contains('active')?'เปิดโหมดสว่าง · จัดวัตถุให้อยู่ในกรอบ':'เล็งกล้องไปที่วัตถุ แล้วลากจุด A และ B'}; document.querySelector('#help').onclick=()=>document.querySelector('#instruction').textContent='ลากจุดสีเหลืองและสีเขียวไปยังปลายระยะที่ต้องการ';
+    document.querySelector('#cameraButton').onclick=async()=>{try{const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});camera.srcObject=stream;stage.classList.add('live');document.querySelector('#status').textContent='กล้องกำลังทำงาน';document.querySelector('#cameraButton').textContent='กล้องกำลังทำงาน'}catch{document.querySelector('#status').textContent='โหมดสาธิต · พร้อมวัด';document.querySelector('#cameraButton').textContent='ใช้โหมดสาธิต'}};
+    if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js'); addEventListener('resize',render);render();
   </script>
 </body>
 </html>
